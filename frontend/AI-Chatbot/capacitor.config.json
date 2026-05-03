@@ -1,0 +1,11 @@
+{
+  "appId": "com.aienglish.voicetutor",
+  "appName": "Voice Assistant",
+  "webDir": "dist",
+  "android": {
+    "allowMixedContent": true
+  },
+  "server": {
+    "androidScheme": "https"
+  }
+}
