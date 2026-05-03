@@ -1,5 +1,23 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    // Reader + UTF-8 avoids BOM/encoding issues vs Properties.load(InputStream) (ISO-8859-1).
+    keystorePropertiesFile.withReader(java.nio.charset.StandardCharsets.UTF_8.name()) { reader ->
+        keystoreProperties.load(reader)
+    }
+}
+
+// Passwords: env KEYSTORE_PASSWORD (both), or KEYSTORE_STORE_PASSWORD / KEYSTORE_KEY_PASSWORD.
+// Same keys may be set in keystore.properties (KEYSTORE_* or storePassword / keyPassword).
+def envStorePwd = System.getenv("KEYSTORE_STORE_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD")
+def envKeyPwd = System.getenv("KEYSTORE_KEY_PASSWORD") ?: System.getenv("KEYSTORE_PASSWORD")
+def propStorePwd = keystoreProperties["KEYSTORE_STORE_PASSWORD"] ?: keystoreProperties["KEYSTORE_PASSWORD"]
+def propKeyPwd = keystoreProperties["KEYSTORE_KEY_PASSWORD"] ?: keystoreProperties["KEYSTORE_PASSWORD"]
+def releaseStorePassword = envStorePwd ?: propStorePwd ?: keystoreProperties["storePassword"]
+def releaseKeyPassword = envKeyPwd ?: envStorePwd ?: propKeyPwd ?: propStorePwd ?: keystoreProperties["keyPassword"]
+
 android {
     namespace "com.aienglish.voicetutor"
     compileSdk rootProject.ext.compileSdkVersion
@@ -16,10 +34,23 @@ android {
             ignoreAssetsPattern '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile rootProject.file(keystoreProperties['storeFile'])
+                storePassword releaseStorePassword
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword releaseKeyPassword
+            }
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
         }
     }
 }

@@ -3,7 +3,7 @@ import { useMemo } from 'react';
 import MicIcon from './components/MicIcon.jsx';
 import SpeechAvatar from './components/SpeechAvatar.jsx';
 import { useVoiceTutorSession } from './hooks/useVoiceTutorSession.js';
-import { createBrowserVoiceKit } from './voice/index.js';
+import { createPlatformVoiceKit } from './voice/index.js';
 
 const raw = import.meta.env.VITE_API_URL;
 /** Always talk to FastAPI directly — posting to :5173/chat only works if Vite proxy is active (fragile). */
@@ -18,7 +18,7 @@ function warnIfAndroidUsesLoopbackApi() {
     const { hostname } = new URL(API_BASE);
     if (hostname === '127.0.0.1' || hostname === 'localhost') {
       console.warn(
-        '[Voice Assistant] API URL is localhost — unreachable from the device. Set VITE_API_URL (e.g. http://10.0.2.2:8001 for emulator, or your PC LAN IP for a phone).',
+        '[Nivi] API URL is localhost — unreachable from the device. Set VITE_API_URL (e.g. http://10.0.2.2:8001 for emulator, or your PC LAN IP for a phone).',
       );
     }
   } catch {
@@ -28,7 +28,7 @@ function warnIfAndroidUsesLoopbackApi() {
 warnIfAndroidUsesLoopbackApi();
 
 export default function App() {
-  const voiceKit = useMemo(() => createBrowserVoiceKit(), []);
+  const voiceKit = useMemo(() => createPlatformVoiceKit(), []);
 
   const {
     supported,
@@ -73,22 +73,10 @@ export default function App() {
           'pb-[max(1.25rem,env(safe-area-inset-bottom))]',
         ].join(' ')}
       >
-        <header className="shrink-0 space-y-4 pt-1 text-center sm:text-left">
-          <div className="flex flex-col items-center gap-3 sm:flex-row sm:items-start sm:justify-between">
-            <span className="inline-flex items-center gap-2 rounded-full border border-white/[0.08] bg-white/[0.04] px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-teal-300/95 shadow-sm shadow-black/20 backdrop-blur-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-teal-400 shadow-[0_0_10px_rgba(45,212,191,0.9)]" />
-              Voice-first
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            <h1 className="bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-3xl font-bold leading-tight tracking-tight text-transparent sm:text-[2rem]">
-              Personal Assistant
-            </h1>
-            <p className="mx-auto max-w-md text-sm font-medium text-slate-400 sm:mx-0">
-              Voice-first help — and gentle English tips when something could sound smoother.
-            </p>
-          </div>
+        <header className="shrink-0 space-y-4 pt-1 text-center">
+          <h1 className="bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-3xl font-bold leading-tight tracking-tight text-transparent sm:text-[2rem]">
+            Nivi Personal Assistant
+          </h1>
 
           <div
             className={[
@@ -215,19 +203,9 @@ export default function App() {
             ) : null}
           </div>
 
-          <div className="w-full rounded-2xl border border-white/[0.05] bg-black/20 px-4 py-3 backdrop-blur-sm">
-            <p className="text-center text-[11px] leading-relaxed text-slate-500">
-              Modular voice stack{' '}
-              <code className="rounded-md bg-white/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
-                src/voice
-              </code>
-              <span className="mx-1 text-slate-600">·</span>
-              API{' '}
-              <code className="break-all rounded-md bg-white/[0.06] px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
-                {API_BASE}
-              </code>
-            </p>
-          </div>
+          <p className="pb-1 text-center text-[10px] leading-relaxed tracking-wide text-slate-600">
+            © {new Date().getFullYear()} Nivedh Labs. All rights reserved.
+          </p>
         </footer>
       </div>
     </div>

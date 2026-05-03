@@ -1,9 +1,10 @@
 {
   "appId": "com.aienglish.voicetutor",
-  "appName": "Voice Assistant",
+  "appName": "Nivi Personal Assistant",
   "webDir": "dist",
   "android": {
-    "allowMixedContent": true
+    "allowMixedContent": true,
+    "adjustMarginsForEdgeToEdge": "force"
   },
   "server": {
     "androidScheme": "https"

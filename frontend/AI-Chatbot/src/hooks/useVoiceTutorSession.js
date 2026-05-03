@@ -12,6 +12,7 @@ export function useVoiceTutorSession(apiBase, voiceKit) {
   kitRef.current = voiceKit;
 
   const listeningRef = useRef(false);
+  const pendingStartRef = useRef(false);
 
   const [listening, setListening] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -50,8 +51,17 @@ export function useVoiceTutorSession(apiBase, voiceKit) {
       return;
     }
 
+    if (pendingStartRef.current) {
+      pendingStartRef.current = false;
+      kit.stt.stopSession();
+      return;
+    }
+
+    pendingStartRef.current = true;
+
     kit.stt.startSession({
       onSessionStart: () => {
+        pendingStartRef.current = false;
         listeningRef.current = true;
         setListening(true);
         setLiveTranscript('');
@@ -61,9 +71,14 @@ export function useVoiceTutorSession(apiBase, voiceKit) {
         setLiveTranscript(displayText);
       },
       onError: ({ message }) => {
+        pendingStartRef.current = false;
+        listeningRef.current = false;
+        setListening(false);
+        setLiveTranscript('');
         setStatus(`Speech recognition error: ${message}. Try again.`);
       },
       onSessionEnd: async ({ transcript }) => {
+        pendingStartRef.current = false;
         listeningRef.current = false;
         setListening(false);
         setLiveTranscript('');

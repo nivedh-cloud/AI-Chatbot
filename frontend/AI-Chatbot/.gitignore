@@ -14,6 +14,10 @@ dist-ssr
 .env
 .env.*
 
+# Android signing (avoid committing keystores outside android/.gitignore scope)
+*.jks
+*.keystore
+
 
 # Editor directories and files
 .vscode/*

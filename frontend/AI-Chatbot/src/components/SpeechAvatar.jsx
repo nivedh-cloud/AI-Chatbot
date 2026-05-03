@@ -139,11 +139,11 @@ function ImageSequenceAvatar({ status, listeningUrl, speakEntries, fps = SPEAKIN
   }
 
   return (
-    <div className="speech-avatar-media h-full w-full min-h-0 overflow-hidden rounded-[1.35rem]">
+    <div className="speech-avatar-media relative aspect-square h-full w-full min-h-0 overflow-hidden rounded-[1.35rem]">
       <img
         src={src}
         alt=""
-        className="h-full w-full min-h-0 select-none object-cover object-[center_22%]"
+        className="absolute inset-0 h-full w-full select-none object-cover object-center"
         draggable={false}
         decoding="async"
       />
@@ -224,13 +224,14 @@ export default function SpeechAvatar({ status = 'idle' }) {
             'relative flex items-center justify-center overflow-hidden rounded-[2.05rem]',
             'bg-gradient-to-b from-slate-900/95 to-slate-950',
             'ring-1 ring-white/[0.06]',
-            'w-[min(72vw,248px)] h-[min(72vw,248px)] sm:w-[min(56vw,268px)] sm:h-[min(56vw,268px)]',
+            'aspect-square w-[min(72vw,268px)] max-w-[268px]',
+            'sm:w-[min(56vw,288px)] sm:max-w-[288px]',
           ].join(' ')}
           aria-hidden
         >
           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_20%,rgba(45,212,191,0.08),transparent_55%)]" />
 
-          <div className="relative grid h-[94%] w-[94%] max-h-[228px] max-w-[228px] min-h-0 grid-cols-1 grid-rows-1 overflow-hidden rounded-[1.35rem] [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:min-h-0 [&>*]:h-full [&>*]:w-full">
+          <div className="relative grid aspect-square h-[calc(100%-1.25rem)] w-[calc(100%-1.25rem)] min-h-0 min-w-0 max-h-[calc(100%-1.25rem)] max-w-[calc(100%-1.25rem)] grid-cols-1 grid-rows-1 overflow-hidden rounded-[1.35rem] [&>*]:col-start-1 [&>*]:row-start-1 [&>*]:min-h-0 [&>*]:h-full [&>*]:w-full">
             {useLocalFrames ? (
               <ImageSequenceAvatar
                 status={status}

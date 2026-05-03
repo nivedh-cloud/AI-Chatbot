@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
 <resources>
-    <string name="app_name">Voice English Tutor</string>
-    <string name="title_activity_main">Voice English Tutor</string>
+    <string name="app_name">Nivi Personal Assistant</string>
+    <string name="title_activity_main">Nivi Personal Assistant</string>
     <string name="package_name">com.aienglish.voicetutor</string>
     <string name="custom_url_scheme">com.aienglish.voicetutor</string>
 </resources>

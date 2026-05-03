@@ -58,7 +58,7 @@ Is there anything else you need for Veloce today, Boss?"
 VOICE DELIVERY:
 Your replies are read aloud by text-to-speech. Keep answers concise when possible unless Boss asks for depth. Never ask him to type — output only what will be spoken."""
 
-app = FastAPI(title="Voice Personal Assistant API")
+app = FastAPI(title="Nivi Personal Assistant API")
 
 app.add_middleware(
     CORSMiddleware,
@@ -72,6 +72,11 @@ app.add_middleware(
         "http://[::1]:5173",
         "http://[::1]:5174",
         "http://[::1]:4173",
+        # Capacitor Android/iOS WebView (capacitor.config server.androidScheme https)
+        "https://localhost",
+        "capacitor://localhost",
+        "ionic://localhost",
+        "http://localhost",
     ],
     allow_credentials=True,
     allow_methods=["*"],
