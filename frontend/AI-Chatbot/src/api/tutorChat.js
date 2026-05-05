@@ -16,7 +16,7 @@ export async function fetchAssistantReply(apiBase, message) {
   } catch (err) {
     const hint = err instanceof Error ? err.message : 'Network error';
     throw new Error(
-      `Cannot reach ${url}. From folder backend run: py -m uvicorn main:app --reload --host 127.0.0.1 --port 8001 (${hint})`,
+      `Cannot reach ${url}. Check backend availability and CORS allowlist for this frontend origin (${hint})`,
     );
   }
 
