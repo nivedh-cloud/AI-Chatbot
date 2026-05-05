@@ -11,7 +11,7 @@ const raw = import.meta.env.VITE_API_URL;
 const API_BASE =
   typeof raw === 'string' && raw.trim() !== ''
     ? raw.trim().replace(/\/$/, '')
-    : 'http://127.0.0.1:8001';
+    : 'https://ai-chatbot-2ymd.onrender.com';
 
 function warnIfAndroidUsesLoopbackApi() {
   if (!import.meta.env.PROD || !Capacitor.isNativePlatform()) return;
