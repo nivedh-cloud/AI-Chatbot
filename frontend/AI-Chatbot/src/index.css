@@ -4,16 +4,16 @@
 
 @layer base {
   html {
-    @apply min-h-[100dvh];
+    @apply min-h-[100dvh] overflow-x-hidden;
   }
 
   body {
-    @apply m-0 min-h-[100dvh] font-sans antialiased text-slate-100;
+    @apply m-0 min-h-[100dvh] overflow-x-hidden font-sans antialiased text-slate-100;
     @apply bg-slate-950;
     -webkit-tap-highlight-color: transparent;
   }
 
   #root {
-    @apply min-h-[100dvh];
+    @apply min-h-[100dvh] overflow-x-hidden;
   }
 }

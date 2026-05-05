@@ -50,7 +50,7 @@ export default function App() {
   const showCard = Boolean(liveTranscript || lastYou || lastAssistantReply);
 
   return (
-    <div className="relative isolate min-h-[100dvh] w-full bg-slate-950">
+    <div className="relative isolate min-h-[100dvh] w-full overflow-x-hidden bg-slate-950">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-30%,rgba(45,212,191,0.18),transparent)]"
         aria-hidden
