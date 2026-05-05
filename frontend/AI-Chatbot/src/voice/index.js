@@ -1,9 +1,11 @@
 import { Capacitor } from '@capacitor/core';
 import { createCapacitorSpeechToText } from './capacitorSpeechToText.js';
+import { createCapacitorTextToSpeech } from './capacitorTextToSpeech.js';
 import { createWebSpeechToText } from './webSpeechToText.js';
 import { createWebTextToSpeech } from './webTextToSpeech.js';
 
 export { createCapacitorSpeechToText } from './capacitorSpeechToText.js';
+export { createCapacitorTextToSpeech } from './capacitorTextToSpeech.js';
 export { createWebSpeechToText } from './webSpeechToText.js';
 export { createWebTextToSpeech } from './webTextToSpeech.js';
 
@@ -36,7 +38,10 @@ export function createPlatformVoiceKit(options = {}) {
   if (Capacitor.isNativePlatform()) {
     return {
       stt: createCapacitorSpeechToText({ lang: options.stt?.lang }),
-      tts: createWebTextToSpeech(options.tts),
+      tts: createCapacitorTextToSpeech({
+        lang: options.tts?.lang,
+        rate: options.tts?.rate,
+      }),
     };
   }
   return createBrowserVoiceKit(options);

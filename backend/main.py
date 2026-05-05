@@ -4,6 +4,7 @@ from pathlib import Path
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
+from google.api_core import exceptions as google_api_exceptions
 from pydantic import BaseModel, Field
 import google.generativeai as genai
 
@@ -139,6 +140,17 @@ async def chat(body: ChatRequest) -> ChatResponse:
         response = model.generate_content(_build_user_turn(body.message))
     except HTTPException:
         raise
+    except google_api_exceptions.ResourceExhausted as exc:
+        # Free tier: small daily limit per model (e.g. 20/day for gemini-2.5-flash); billing removes caps.
+        raise HTTPException(
+            status_code=429,
+            detail=(
+                "Gemini quota exceeded. The free tier allows only a few dozen requests per day per model; "
+                "wait for the daily reset, enable billing on your Google AI / Cloud project, or set "
+                "GEMINI_MODEL to another Flash model for a separate quota. "
+                f"Details: {exc}"
+            ),
+        ) from exc
     except Exception as exc:  # pragma: no cover - surfaced to client
         raise HTTPException(status_code=502, detail=f"Gemini request failed: {exc}") from exc
 

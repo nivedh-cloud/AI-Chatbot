@@ -14,6 +14,9 @@ export function createWebTextToSpeech(defaults = {}) {
   const rate = defaults.rate ?? 1;
   const voicePreference = defaults.voicePreference ?? 'female';
 
+  const getSynth = () =>
+    typeof window !== 'undefined' && window.speechSynthesis ? window.speechSynthesis : null;
+
   /**
    * Common vendor strings — not exhaustive; falls back to first non-male match.
    * @param {string} langNorm utterance.lang
@@ -21,7 +24,9 @@ export function createWebTextToSpeech(defaults = {}) {
    * @returns {SpeechSynthesisVoice | null}
    */
   const pickVoiceForGender = (langNorm, preference) => {
-    const voices = window.speechSynthesis.getVoices();
+    const synth = getSynth();
+    if (!synth) return null;
+    const voices = synth.getVoices();
     if (!voices.length) return null;
 
     const primary = langNorm.split('-')[0]?.toLowerCase() ?? 'en';
@@ -51,12 +56,17 @@ export function createWebTextToSpeech(defaults = {}) {
   return {
     isSupported: () =>
       typeof window !== 'undefined' &&
-      typeof window.speechSynthesis !== 'undefined' &&
+      Boolean(getSynth()) &&
       typeof SpeechSynthesisUtterance !== 'undefined',
 
     speak: (text, speakOptions = {}) => {
+      const synth = getSynth();
       if (!text?.trim()) return;
-      window.speechSynthesis.cancel();
+      if (!synth || typeof SpeechSynthesisUtterance === 'undefined') {
+        queueMicrotask(() => speakOptions.onEnd?.());
+        return;
+      }
+      synth.cancel();
 
       let finished = false;
       const finish = () => {
@@ -87,24 +97,20 @@ export function createWebTextToSpeech(defaults = {}) {
         if (fallbackTimer) window.clearTimeout(fallbackTimer);
         const voice = pickVoiceForGender(utterance.lang, pref);
         if (voice) utterance.voice = voice;
-        window.speechSynthesis.speak(utterance);
+        synth.speak(utterance);
       };
 
-      if (window.speechSynthesis.getVoices().length > 0) {
+      if (synth.getVoices().length > 0) {
         applyVoiceAndSpeak();
       } else {
-        window.speechSynthesis.addEventListener(
-          'voiceschanged',
-          applyVoiceAndSpeak,
-          { once: true },
-        );
-        window.speechSynthesis.getVoices();
+        synth.addEventListener('voiceschanged', applyVoiceAndSpeak, { once: true });
+        synth.getVoices();
         fallbackTimer = window.setTimeout(() => applyVoiceAndSpeak(), 750);
       }
     },
 
     cancel: () => {
-      window.speechSynthesis.cancel();
+      getSynth()?.cancel();
     },
   };
 }

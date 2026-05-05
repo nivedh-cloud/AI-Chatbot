@@ -2,6 +2,7 @@ import { Capacitor } from '@capacitor/core';
 import { useMemo } from 'react';
 import MicIcon from './components/MicIcon.jsx';
 import SpeechAvatar from './components/SpeechAvatar.jsx';
+import { useAppLocation } from './hooks/useAppLocation.js';
 import { useVoiceTutorSession } from './hooks/useVoiceTutorSession.js';
 import { createPlatformVoiceKit } from './voice/index.js';
 
@@ -29,6 +30,7 @@ warnIfAndroidUsesLoopbackApi();
 
 export default function App() {
   const voiceKit = useMemo(() => createPlatformVoiceKit(), []);
+  const location = useAppLocation();
 
   const {
     supported,
@@ -48,7 +50,7 @@ export default function App() {
   const showCard = Boolean(liveTranscript || lastYou || lastAssistantReply);
 
   return (
-    <div className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-slate-950">
+    <div className="relative isolate min-h-[100dvh] w-full bg-slate-950">
       <div
         className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_120%_80%_at_50%_-30%,rgba(45,212,191,0.18),transparent)]"
         aria-hidden
@@ -68,14 +70,14 @@ export default function App() {
 
       <div
         className={[
-          'relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-lg flex-col gap-5 px-5',
+          'relative z-10 mx-auto flex w-full max-w-lg flex-col gap-5 px-5',
           'pt-[max(1.25rem,env(safe-area-inset-top))]',
-          'pb-[max(1.25rem,env(safe-area-inset-bottom))]',
+          'pb-[max(2rem,env(safe-area-inset-bottom))]',
         ].join(' ')}
       >
         <header className="shrink-0 space-y-4 pt-1 text-center">
           <h1 className="bg-gradient-to-br from-white via-slate-100 to-slate-400 bg-clip-text text-3xl font-bold leading-tight tracking-tight text-transparent sm:text-[2rem]">
-            Nivi Personal Assistant
+            Personal Assistant
           </h1>
 
           <div
@@ -112,49 +114,51 @@ export default function App() {
           <SpeechAvatar status={avatarStatus} />
         </div>
 
-        <section className="flex min-h-0 flex-1 flex-col gap-3">
+        <section className="relative z-[1] flex flex-col gap-3">
           {showCard ? (
             <div
               className={[
-                'flex min-h-[128px] flex-1 flex-col overflow-hidden rounded-3xl',
+                'flex flex-col overflow-hidden rounded-3xl',
                 'border border-white/[0.08] bg-slate-950/45 shadow-[0_25px_50px_-25px_rgba(0,0,0,0.65)] backdrop-blur-xl',
               ].join(' ')}
             >
-              <div className="border-b border-white/[0.06] bg-gradient-to-r from-white/[0.03] to-transparent px-4 py-3">
+              <div className="shrink-0 border-b border-white/[0.06] bg-gradient-to-r from-white/[0.03] to-transparent px-4 py-3">
                 <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500">
                   Conversation
                 </p>
               </div>
-              <div className="max-h-[42vh] flex-1 space-y-5 overflow-y-auto overscroll-contain p-4 sm:max-h-[48vh]">
+              <div className="touch-manipulation space-y-5 p-4">
                 {liveTranscript ? (
-                  <div className="space-y-2 rounded-2xl bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
+                  <div className="pointer-events-auto space-y-2 rounded-2xl bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-teal-400/90">
                       You · listening
                     </p>
-                    <p className="text-[15px] leading-relaxed text-slate-100">{liveTranscript}</p>
+                    <p className="select-text text-[15px] leading-relaxed text-slate-100">{liveTranscript}</p>
                   </div>
                 ) : null}
                 {!listening && lastYou ? (
-                  <div className="space-y-2 rounded-2xl bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
+                  <div className="pointer-events-auto space-y-2 rounded-2xl bg-white/[0.03] p-3 ring-1 ring-white/[0.06]">
                     <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">
                       You · sent
                     </p>
-                    <p className="text-[15px] leading-relaxed text-slate-200">{lastYou}</p>
+                    <p className="select-text text-[15px] leading-relaxed text-slate-200">{lastYou}</p>
                   </div>
                 ) : null}
                 {lastAssistantReply ? (
-                  <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-teal-950/50 to-slate-900/80 p-4 ring-1 ring-teal-500/15">
+                  <div className="pointer-events-auto relative isolate overflow-hidden rounded-2xl bg-gradient-to-br from-teal-950/50 to-slate-900/80 p-4 ring-1 ring-teal-500/15">
                     <div className="pointer-events-none absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-teal-400 to-cyan-500 opacity-80" />
                     <p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-teal-300/95">
                       Assistant
                     </p>
-                    <p className="pl-2 text-[15px] leading-relaxed text-slate-50">{lastAssistantReply}</p>
+                    <p className="select-text pl-2 text-[15px] leading-relaxed text-slate-50">
+                      {lastAssistantReply}
+                    </p>
                   </div>
                 ) : null}
               </div>
             </div>
           ) : (
-            <div className="flex min-h-[100px] flex-1 flex-col items-center justify-center rounded-3xl border border-dashed border-white/[0.1] bg-gradient-to-b from-white/[0.02] to-transparent px-6 py-10 text-center">
+            <div className="flex min-h-[140px] flex-col items-center justify-center rounded-3xl border border-dashed border-white/[0.1] bg-gradient-to-b from-white/[0.02] to-transparent px-6 py-10 text-center">
               <div className="mb-3 flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-500/10 ring-1 ring-teal-500/20">
                 <MicIcon className="h-7 w-7 text-teal-400/90" />
               </div>
@@ -164,6 +168,21 @@ export default function App() {
             </div>
           )}
         </section>
+
+        <div
+          className={[
+            'rounded-2xl border px-4 py-3 text-left text-xs leading-relaxed backdrop-blur-md',
+            location.permission === 'granted'
+              ? 'border-teal-500/20 bg-teal-950/20 text-teal-100/90'
+              : location.phase === 'loading'
+                ? 'border-white/[0.06] bg-slate-950/40 text-slate-400'
+                : 'border-white/[0.06] bg-slate-950/40 text-slate-500',
+          ].join(' ')}
+          role="status"
+        >
+          <p className="text-[10px] font-bold uppercase tracking-wider text-slate-500">Location</p>
+          <p className="mt-1 text-[13px] text-slate-300">{location.message}</p>
+        </div>
 
         <footer className="flex shrink-0 flex-col items-center gap-5">
           <div className="flex flex-wrap items-center justify-center gap-4">
